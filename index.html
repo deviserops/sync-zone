@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SyncZone - Client Meeting & Timezone Planner</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#b9defe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar styling for premium feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+    <!-- Sticky Navigation / Header -->
+    <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
+                    <!-- Global/Clock Icon -->
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-brand-600 to-indigo-500 bg-clip-text text-transparent">SyncZone</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Time-Zone Meeting Coordinator</p>
+                </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="flex items-center space-x-4">
+                <!-- Theme Toggle -->
+                <button id="themeToggleBtn" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Toggle Theme">
+                    <svg id="sunIcon" class="w-5 h-5 text-amber-500 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.46 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" /></svg>
+                    <svg id="moonIcon" class="w-5 h-5 text-indigo-400" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
+                </button>
+
+                <!-- Database Utilities Trigger -->
+                <button id="dbManageBtn" class="flex items-center space-x-2 text-xs font-semibold px-3.5 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.58 4 8 4s8-2.19 8-4V7M4 7c0 2.21 3.58 4 8 4s8-2.19 8-4M4 7c0-2.21 3.58-4 8-4s8 1.79 8 4m0 5c0 2.21-3.58 4-8 4s-8-2.19-8-4" /></svg>
+                    <span>Database</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- AdSense Top Banner Placement (Highly optimized location for premium CPC rates) -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        <div class="bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[90px]">
+            <span class="absolute top-2 left-2 text-[9px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase">Premium AdSense Placement (Responsive Leaderboard)</span>
+            <p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Grow your freelance business with automated invoices & contracts.</p>
+            <span class="text-xs text-brand-600 dark:text-brand-400 mt-1 cursor-pointer hover:underline font-bold">Learn More &rarr;</span>
+        </div>
+    </section>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- LEFT COLUMN: Timezone Sync, Live Clocks, Slider Tracker (7 Columns) -->
+        <div class="lg:col-span-7 flex flex-col space-y-6">
+            
+            <!-- Hero Watch & Dynamic Scheduler Controls -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold">Dynamic Time Sync</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Slide to test schedules; toggles automatically to your live time.</p>
+                    </div>
+                    <div class="mt-4 sm:mt-0 flex items-center space-x-2">
+                        <button id="liveModeBtn" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center space-x-1.5 bg-brand-500 text-white shadow shadow-brand-500/20">
+                            <span id="liveIndicatorDot" class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                            </span>
+                            <span>Live Sync</span>
+                        </button>
+                        <button id="planModeBtn" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center space-x-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700">
+                            <span>Planning Mode</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Local Watch Area -->
+                <div class="bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-900 rounded-xl p-5 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 tracking-wider uppercase">Local Timezone</span>
+                        <div class="text-lg font-bold mt-1" id="localZoneName">Detecting...</div>
+                        <div class="text-sm text-slate-500 dark:text-slate-400" id="localDateStr">Detecting...</div>
+                    </div>
+                    <div class="mt-4 sm:mt-0 flex items-baseline">
+                        <span class="text-4xl font-extrabold tracking-tight tabular-nums text-brand-600 dark:text-brand-400" id="localTimeDisplay">00:00:00</span>
+                    </div>
+                </div>
+
+                <!-- Interactive Scheduler Slider -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="font-bold text-slate-700 dark:text-slate-300">Set Time Slider (24h Plan):</span>
+                        <span class="font-semibold text-brand-600 dark:text-brand-400 tabular-nums px-2 py-0.5 bg-brand-50 dark:bg-brand-900/30 rounded" id="sliderValDisplay">12:00 PM</span>
+                    </div>
+                    <div class="relative flex items-center">
+                        <input type="range" id="timeSlider" min="0" max="1439" value="720" class="w-full h-2.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-brand-500">
+                    </div>
+                    <div class="flex justify-between text-[11px] text-slate-400 dark:text-slate-500 font-semibold uppercase px-1">
+                        <span>Midnight</span>
+                        <span>6 AM</span>
+                        <span>Noon</span>
+                        <span>6 PM</span>
+                        <span>Midnight</span>
+                    </div>
+                </div>
+
+                <!-- Golden Workhours Overlap Alert widget -->
+                <div id="goldenWindowAlert" class="mt-4 p-3 rounded-xl border border-brand-100 dark:border-brand-900 bg-brand-50/50 dark:bg-brand-950/20 text-xs text-brand-700 dark:text-brand-300 flex items-center justify-between hidden">
+                    <div class="flex items-center space-x-2">
+                        <span class="flex h-2 w-2 relative">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                        </span>
+                        <span class="font-semibold" id="goldenWindowText">Excellent timing! Ideal overlap slot.</span>
+                    </div>
+                    <span class="text-[10px] bg-brand-100 dark:bg-brand-900 px-2 py-0.5 rounded font-black tracking-wider uppercase">Ideal Slot</span>
+                </div>
+            </div>
+
+            <!-- Monitored Timezones Section -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex-grow flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold">Monitored Timezones</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Client times matching selected scheduler target.</p>
+                    </div>
+                    <!-- Quick Add Action -->
+                    <button id="addZoneTriggerBtn" class="flex items-center space-x-1 text-xs font-bold px-3 py-1.5 rounded-lg bg-brand-500 hover:bg-brand-600 text-white transition shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        <span>Add Timezone</span>
+                    </button>
+                </div>
+
+                <!-- Add Timezone Interactive Dropdown Block -->
+                <div id="addZoneFormBlock" class="hidden mb-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase">Search World Timezones</span>
+                        <button id="closeZoneFormBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">&times;</button>
+                    </div>
+                    <div class="relative">
+                        <input type="text" id="timezoneSearchInput" placeholder="Type city or zone (e.g. New York, Tokyo, UTC...)" class="w-full text-sm p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-brand-500 outline-none">
+                        <!-- Autocomplete dropdown suggestions -->
+                        <div id="timezoneSuggestions" class="absolute left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50 hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Zone Card Containers -->
+                <div id="timezoneCardContainer" class="space-y-3 flex-grow overflow-y-auto max-h-[480px] pr-1">
+                    <!-- Dynamic rendering of added timezones -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Client Manager & Meeting Planner (5 Columns) -->
+        <div class="lg:col-span-5 flex flex-col space-y-6">
+
+            <!-- Client Registry Panel -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold">Client Directory</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Store clients with active timezone hooks.</p>
+                    </div>
+                    <button id="addClientTriggerBtn" class="flex items-center space-x-1 text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+                        <span>New Client</span>
+                    </button>
+                </div>
+
+                <!-- New Client Expansion Block -->
+                <div id="addClientFormBlock" class="hidden mb-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase">Register New Client</span>
+                        <button id="closeClientFormBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">&times;</button>
+                    </div>
+                    <form id="newClientForm" class="space-y-2.5">
+                        <input type="text" id="clientNameInput" placeholder="Client Name (Required)" class="w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none" required>
+                        <input type="text" id="clientCompanyInput" placeholder="Company Name" class="w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none">
+                        <input type="email" id="clientEmailInput" placeholder="Email Address" class="w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none">
+                        
+                        <!-- Auto-linked timezone hook selector -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-1">LINKED TIMEZONE</label>
+                            <select id="clientTimezoneSelect" class="w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none">
+                                <!-- Populated dynamically from valid timezones -->
+                            </select>
+                        </div>
+
+                        <button type="submit" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition">Save Client</button>
+                    </form>
+                </div>
+
+                <!-- Client List Loop -->
+                <div id="clientsContainer" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    <!-- Dynamic client item entries render here -->
+                </div>
+            </div>
+
+            <!-- Client Meetings & Action Vault -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex-grow flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold" id="meetingFormHeading">Meetings &amp; Notes</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Auto-calculated cross timezone target schedules.</p>
+                    </div>
+                    <button id="addMeetingTriggerBtn" class="flex items-center space-x-1 text-xs font-bold px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        <span>Schedule</span>
+                    </button>
+                </div>
+
+                <!-- Meeting Scheduling Expansion Block -->
+                <div id="addMeetingFormBlock" class="hidden mb-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span id="meetingFormTitle" class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase">Create Meeting / Event Card</span>
+                        <button id="closeMeetingFormBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">&times;</button>
+                    </div>
+                    <form id="newMeetingForm" class="space-y-2.5">
+                        <!-- Client Binder -->
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-1">CLIENT ASSIGNMENT</label>
+                            <select id="meetingClientSelect" class="w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none" required>
+                                <!-- Populated dynamically from clients list -->
+                            </select>
+                        </div>
+
+                        <!-- Date/Time Picker -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">DATE (LOCAL TIME)</label>
+                                <input type="date" id="meetingDateInput" class="w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none" required>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">TIME (LOCAL TIME)</label>
+                                <input type="time" id="meetingTimeInput" class="w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none" required>
+                            </div>
+                        </div>
+
+                        <!-- Info Inputs -->
+                        <input type="text" id="meetingTitleInput" placeholder="Meeting Title (e.g., Weekly Project Review)" class="w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none" required>
+                        <textarea id="meetingDescInput" rows="2" placeholder="Agendas, action items or details..." class="w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none"></textarea>
+
+                        <!-- Fast Checklist Builder -->
+                        <div class="space-y-1.5">
+                            <label class="block text-[10px] font-bold text-slate-500">TASK TO-DO CHECKS (COMMA SEPARATED)</label>
+                            <input type="text" id="meetingChecklistInput" placeholder="Send blueprint, Review budget sheet, Set milestones" class="w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none">
+                        </div>
+
+                        <button type="submit" id="submitMeetingBtn" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition">Save Schedule Event</button>
+                    </form>
+                </div>
+
+                <!-- Display list of Scheduled Meetings -->
+                <div id="meetingsContainer" class="space-y-3 flex-grow overflow-y-auto max-h-[380px] pr-1">
+                    <!-- Dynamic rendering of meetings schedules and interactive task hooks -->
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Mid-Page Interactive Sidebar Adsense Simulation Block -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+        <div class="border border-slate-200 dark:border-slate-800 rounded-2xl p-6 bg-white dark:bg-slate-900 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <div class="p-3 bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-xl">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm">Need Global Client Reach & Sync?</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Keep running SyncZone tool in active tabs. The automatic system guarantees your client times update reliably in real-time.</p>
+                </div>
+            </div>
+            <!-- Mock Ad banner box -->
+            <div class="bg-slate-100 dark:bg-slate-950 border border-dashed border-slate-300 dark:border-slate-800 px-4 py-3 rounded-xl flex items-center justify-center text-center text-xs font-bold text-slate-400 max-w-sm w-full relative">
+                <span class="absolute top-1 left-2 text-[8px] text-slate-400 uppercase tracking-widest">Sponsored Ad</span>
+                Ready to invoice? Get the best billing SaaS today.
+            </div>
+        </div>
+    </section>
+
+    <!-- Premium Custom Modal Dialog (Alternative to Browser Alerts) -->
+    <div id="customModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm hidden">
+        <div class="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+            <div class="p-5">
+                <div class="flex items-center space-x-3 mb-3">
+                    <div id="modalIconContainer" class="p-2 rounded-xl bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400">
+                        <!-- Icon injected dynamically -->
+                    </div>
+                    <h3 id="modalTitle" class="text-base font-bold">System Alert</h3>
+                </div>
+                <p id="modalBody" class="text-xs text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">Alert message body here.</p>
+                <div class="flex items-center justify-end space-x-2">
+                    <button id="modalSecondaryBtn" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition">Cancel</button>
+                    <button id="modalPrimaryBtn" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-brand-600 hover:bg-brand-700 text-white transition">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DB Management Expansion Panel Drawer -->
+    <div id="dbManageDrawer" class="fixed right-0 top-0 bottom-0 z-50 w-full max-w-sm bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl p-6 hidden flex flex-col justify-between">
+        <div class="space-y-6">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.58 4 8 4s8-2.19 8-4V7M4 7c0 2.21 3.58 4 8 4s8-2.19 8-4M4 7c0-2.21 3.58-4 8-4s8 1.79 8 4m0 5c0 2.21-3.58 4-8 4s-8-2.19-8-4" /></svg>
+                    <h3 class="font-extrabold text-base">Client DB Dashboard</h3>
+                </div>
+                <button id="closeDbDrawerBtn" class="text-xl font-bold hover:text-red-500">&times;</button>
+            </div>
+
+            <!-- Database metrics tracker -->
+            <div class="grid grid-cols-2 gap-3">
+                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800">
+                    <span class="text-[10px] font-bold text-slate-400 block uppercase">Client Files</span>
+                    <span id="statClients" class="text-2xl font-black text-emerald-600 dark:text-emerald-400">0</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800">
+                    <span class="text-[10px] font-bold text-slate-400 block uppercase">Meeting Logs</span>
+                    <span id="statMeetings" class="text-2xl font-black text-indigo-600 dark:text-indigo-400">0</span>
+                </div>
+            </div>
+
+            <!-- Import and Export Action Area -->
+            <div class="space-y-4">
+                <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">Export Data (Backups)</h4>
+                    <p class="text-[11px] text-slate-500 mb-3">Download complete records, offline meetings, timezone logs, and templates as a JSON bundle.</p>
+                    <button id="exportDbBtn" class="w-full py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-lg transition flex items-center justify-center space-x-1.5 border border-slate-300 dark:border-slate-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        <span>Download DB JSON</span>
+                    </button>
+                </div>
+
+                <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">Import Data (Restore)</h4>
+                    <p class="text-[11px] text-slate-500 mb-3">Restore your schedule workspace by uploading an exported file. All current local state will be overwritten safely.</p>
+                    
+                    <!-- HTML Drag & Drop File Input -->
+                    <label class="w-full flex flex-col items-center px-4 py-4 bg-white dark:bg-slate-950 text-brand-600 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        <span class="mt-1 text-xs font-semibold">Select JSON File</span>
+                        <input type="file" id="importFileInput" accept=".json" class="hidden" />
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Factory Reset Base -->
+        <div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+            <button id="resetDbBtn" class="w-full py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition shadow-sm">
+                Clean Slate Reset (Danger)
+            </button>
+        </div>
+    </div>
+
+    <!-- AdSense Anchor Placement (Ad Unit at bottom for persistent view coverage) -->
+    <footer class="w-full bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-4">
+            <div>
+                <p>&copy; 2026 SyncZone. Empowering borderless teams and agencies worldwide.</p>
+                <p class="text-[10px] text-slate-400 mt-0.5">Fully client-side operation, 100% private. Save data local or backups via standard json encryption files.</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="#" class="hover:underline">Privacy Policy</a>
+                <a href="#" class="hover:underline">Terms of Service</a>
+                <a href="#" class="hover:underline">Developer Docs</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AdSense Anchor Ad Simulation Stick -->
+    <div id="stickyAdAnchor" class="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 py-2.5 shadow-lg flex items-center justify-between max-w-4xl mx-auto rounded-t-xl">
+        <span class="text-[9px] font-bold text-slate-400 tracking-wide uppercase">AdSense Anchor Banner</span>
+        <p class="text-xs font-medium text-slate-600 dark:text-slate-300">📈 Optimize client sync workflow & billing templates automatically with premium add-ons.</p>
+        <div class="flex items-center space-x-3">
+            <button class="bg-brand-600 hover:bg-brand-700 text-white text-[10px] px-3 py-1 font-bold rounded-md">Upgrade Now</button>
+            <button id="closeStickyAdBtn" class="text-slate-400 hover:text-slate-600 text-sm font-bold px-1.5">&times;</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC - Single File Coordination -->
+    <script>
+        // Database Core State Schema
+        let state = {
+            timezones: [],
+            clients: [],
+            meetings: []
+        };
+
+        // Static Master Dataset of popular timezones (Initially empty, loaded dynamically via fetch)
+        let PopularTimezones = [];
+
+        // Mode Controller Variable
+        // "LIVE" = system clock update; "PLAN" = interactive timezone time calculation slider target is locked
+        let mode = "LIVE"; 
+        let activeLiveInterval = null;
+        let editingMeetingId = null; // Track currently edited meeting object
+
+        // Document elements cache
+        const localZoneNameEl = document.getElementById("localZoneName");
+        const localDateStrEl = document.getElementById("localDateStr");
+        const localTimeDisplayEl = document.getElementById("localTimeDisplay");
+        const timeSlider = document.getElementById("timeSlider");
+        const sliderValDisplay = document.getElementById("sliderValDisplay");
+        const liveModeBtn = document.getElementById("liveModeBtn");
+        const planModeBtn = document.getElementById("planModeBtn");
+        const goldenWindowAlert = document.getElementById("goldenWindowAlert");
+        const goldenWindowText = document.getElementById("goldenWindowText");
+
+        const timezoneCardContainer = document.getElementById("timezoneCardContainer");
+        const addZoneTriggerBtn = document.getElementById("addZoneTriggerBtn");
+        const addZoneFormBlock = document.getElementById("addZoneFormBlock");
+        const closeZoneFormBtn = document.getElementById("closeZoneFormBtn");
+        const timezoneSearchInput = document.getElementById("timezoneSearchInput");
+        const timezoneSuggestions = document.getElementById("timezoneSuggestions");
+
+        const addClientTriggerBtn = document.getElementById("addClientTriggerBtn");
+        const addClientFormBlock = document.getElementById("addClientFormBlock");
+        const closeClientFormBtn = document.getElementById("closeClientFormBtn");
+        const newClientForm = document.getElementById("newClientForm");
+        const clientNameInput = document.getElementById("clientNameInput");
+        const clientCompanyInput = document.getElementById("clientCompanyInput");
+        const clientEmailInput = document.getElementById("clientEmailInput");
+        const clientTimezoneSelect = document.getElementById("clientTimezoneSelect");
+        const clientsContainer = document.getElementById("clientsContainer");
+
+        const addMeetingTriggerBtn = document.getElementById("addMeetingTriggerBtn");
+        const addMeetingFormBlock = document.getElementById("addMeetingFormBlock");
+        const closeMeetingFormBtn = document.getElementById("closeMeetingFormBtn");
+        const newMeetingForm = document.getElementById("newMeetingForm");
+        const meetingClientSelect = document.getElementById("meetingClientSelect");
+        const meetingDateInput = document.getElementById("meetingDateInput");
+        const meetingTimeInput = document.getElementById("meetingTimeInput");
+        const meetingTitleInput = document.getElementById("meetingTitleInput");
+        const meetingDescInput = document.getElementById("meetingDescInput");
+        const meetingChecklistInput = document.getElementById("meetingChecklistInput");
+        const meetingsContainer = document.getElementById("meetingsContainer");
+        const submitMeetingBtn = document.getElementById("submitMeetingBtn");
+        const meetingFormTitle = document.getElementById("meetingFormTitle");
+
+        const themeToggleBtn = document.getElementById("themeToggleBtn");
+        const sunIcon = document.getElementById("sunIcon");
+        const moonIcon = document.getElementById("moonIcon");
+
+        const dbManageBtn = document.getElementById("dbManageBtn");
+        const dbManageDrawer = document.getElementById("dbManageDrawer");
+        const closeDbDrawerBtn = document.getElementById("closeDbDrawerBtn");
+        const statClients = document.getElementById("statClients");
+        const statMeetings = document.getElementById("statMeetings");
+        const exportDbBtn = document.getElementById("exportDbBtn");
+        const importFileInput = document.getElementById("importFileInput");
+        const resetDbBtn = document.getElementById("resetDbBtn");
+
+        const customModal = document.getElementById("customModal");
+        const modalIconContainer = document.getElementById("modalIconContainer");
+        const modalTitle = document.getElementById("modalTitle");
+        const modalBody = document.getElementById("modalBody");
+        const modalSecondaryBtn = document.getElementById("modalSecondaryBtn");
+        const modalPrimaryBtn = document.getElementById("modalPrimaryBtn");
+
+        const stickyAdAnchor = document.getElementById("stickyAdAnchor");
+        const closeStickyAdBtn = document.getElementById("closeStickyAdBtn");
+
+        // Dynamic Loading of Timezone Definitions from parallel file
+        async function fetchTimezoneDefinitions() {
+            try {
+                const response = await fetch('timezones.json');
+                if (!response.ok) {
+                    throw new Error("timezones.json network response not ok");
+                }
+                const data = await response.json();
+                PopularTimezones = data.map(item => ({
+                    label: item.displayName,
+                    zone: item.timezoneId
+                }));
+            } catch (err) {
+                console.warn("Could not load dynamic timezones.json, loading robust system defaults.", err);
+                // Graceful fallback lists inside standard configuration layout
+                PopularTimezones = [
+                    { label: "UTC (Coordinated Universal Time)", zone: "UTC" },
+                    { label: "GMT (Greenwich Mean Time - London)", zone: "Europe/London" },
+                    { label: "EST / EDT (Eastern Time - New York)", zone: "America/New_York" },
+                    { label: "CST / CDT (Central Time - Chicago)", zone: "America/Chicago" },
+                    { label: "PST / PDT (Pacific Time - Los Angeles)", zone: "America/Los_Angeles" },
+                    { label: "IST (India Standard Time - Mumbai)", zone: "Asia/Kolkata" },
+                    { label: "SGT (Singapore Standard Time)", zone: "Asia/Singapore" },
+                    { label: "JST (Japan Standard Time - Tokyo)", zone: "Asia/Tokyo" },
+                    { label: "AEST / AEDT (Australian Eastern - Sydney)", zone: "Australia/Sydney" },
+                    { label: "CET / CEST (Central European - Paris)", zone: "Europe/Paris" }
+                ];
+            }
+        }
+
+        // System Alert Modal Launcher
+        function openModal({ title, body, confirmText = "OK", showCancel = false, onConfirm = null }) {
+            modalTitle.innerText = title;
+            modalBody.innerText = body;
+            modalPrimaryBtn.innerText = confirmText;
+            
+            if (showCancel) {
+                modalSecondaryBtn.classList.remove("hidden");
+            } else {
+                modalSecondaryBtn.classList.add("hidden");
+            }
+
+            modalIconContainer.innerHTML = `<svg class="w-6 h-6 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+            customModal.classList.remove("hidden");
+
+            modalPrimaryBtn.onclick = () => {
+                customModal.classList.add("hidden");
+                if (onConfirm) onConfirm();
+            };
+            modalSecondaryBtn.onclick = () => {
+                customModal.classList.add("hidden");
+            };
+        }
+
+        // Helper: Format Timezone output based on target slider hour-minute index
+        function getComputedDateFromSlider(minutesOffset) {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            const day = today.getDate();
+            const hour = Math.floor(minutesOffset / 60);
+            const minute = minutesOffset % 60;
+            return new Date(year, month, day, hour, minute, 0, 0);
+        }
+
+        // Initialize state from LocalStorage or seed beautiful mock template data
+        function loadDatabase() {
+            try {
+                // Check if share link state exists in hash
+                const hashState = handleUrlHashImport();
+                if (hashState) {
+                    state = hashState;
+                    saveDatabase();
+                    window.location.hash = ""; // Clear hash after success
+                    openModal({ title: "Shared Workspace Loaded", body: "Successfully imported shared timezone details and meeting agenda proposal directly from link!" });
+                    return;
+                }
+
+                const storedState = localStorage.getItem("synczone_database");
+                if (storedState) {
+                    state = JSON.parse(storedState);
+                } else {
+                    // Seed empty initial state
+                    state = {
+                        timezones: [],
+                        clients: [],
+                        meetings: []
+                    };
+                    saveDatabase();
+                }
+            } catch (err) {
+                console.error("Database reading fail", err);
+            }
+        }
+
+        // Save DB content to localStorage
+        function saveDatabase() {
+            try {
+                localStorage.setItem("synczone_database", JSON.stringify(state));
+                updateMetrics();
+            } catch (err) {
+                openModal({ title: "Save Error", body: "LocalStorage capacity exceeded or blocked." });
+            }
+        }
+
+        function updateMetrics() {
+            statClients.innerText = state.clients.length;
+            statMeetings.innerText = state.meetings.length;
+        }
+
+        // Setup Live Mode Clock Loop
+        function runLiveSync() {
+            mode = "LIVE";
+            liveModeBtn.className = "px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center space-x-1.5 bg-brand-500 text-white shadow shadow-brand-500/20";
+            planModeBtn.className = "px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center space-x-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700";
+            goldenWindowAlert.classList.add("hidden");
+            
+            // Restore active pulsing indicator
+            const dot = document.getElementById("liveIndicatorDot");
+            if (dot) {
+                dot.innerHTML = `
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                `;
+            }
+
+            if (activeLiveInterval) clearInterval(activeLiveInterval);
+
+            // Fetch and update
+            const updateClock = () => {
+                const now = new Date();
+                const minutes = now.getHours() * 60 + now.getMinutes();
+                timeSlider.value = minutes;
+                updateSliderDisplay(minutes);
+                renderAllTimezones(now);
+            };
+
+            updateClock();
+            activeLiveInterval = setInterval(updateClock, 1000);
+        }
+
+        // Planning Mode Logic
+        function runPlanningMode() {
+            mode = "PLAN";
+            planModeBtn.className = "px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center space-x-1.5 bg-indigo-600 text-white shadow shadow-indigo-600/20";
+            liveModeBtn.className = "px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center space-x-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700";
+            
+            // Set indicator to a neutral, stationary dot to preserve spacing/alignment without blinking
+            const dot = document.getElementById("liveIndicatorDot");
+            if (dot) {
+                dot.innerHTML = `
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-slate-400 dark:bg-slate-500"></span>
+                `;
+            }
+
+            if (activeLiveInterval) {
+                clearInterval(activeLiveInterval);
+                activeLiveInterval = null;
+            }
+            
+            const selectedMinutes = parseInt(timeSlider.value);
+            const customDate = getComputedDateFromSlider(selectedMinutes);
+            updateSliderDisplay(selectedMinutes);
+            renderAllTimezones(customDate);
+            checkGoldenWindowOverlap(selectedMinutes);
+        }
+
+        // Golden Windows overlap rating algorithms
+        function checkGoldenWindowOverlap(minutes) {
+            const currentHour = Math.floor(minutes / 60);
+            
+            // Check overlaps for all monitored timezones
+            let awakeAndWorkingCount = 0;
+            let totalMonitored = state.timezones.length;
+
+            if (totalMonitored === 0) {
+                goldenWindowAlert.classList.add("hidden");
+                return;
+            }
+
+            state.timezones.forEach(zone => {
+                try {
+                    const formatter = new Intl.DateTimeFormat('en-US', {
+                        timeZone: zone, hour: 'numeric', hour12: false
+                    });
+                    const targetHour = parseInt(formatter.format(getComputedDateFromSlider(minutes)));
+                    // 9 AM to 5 PM typical target overlap working window
+                    if (targetHour >= 9 && targetHour < 17) {
+                        awakeAndWorkingCount++;
+                    }
+                } catch(e){}
+            });
+
+            // Local user overlap check
+            const localUserWorking = (currentHour >= 9 && currentHour < 17);
+            
+            goldenWindowAlert.classList.remove("hidden");
+            if (localUserWorking && awakeAndWorkingCount === totalMonitored) {
+                goldenWindowText.innerText = "Perfect Alignment! All monitored client zones are inside typical overlap business hours (9AM-5PM).";
+                goldenWindowAlert.className = "mt-4 p-3 rounded-xl border border-emerald-100 dark:border-emerald-900 bg-emerald-50/50 dark:bg-emerald-950/20 text-xs text-emerald-700 dark:text-emerald-300 flex items-center justify-between";
+            } else if (localUserWorking && awakeAndWorkingCount > 0) {
+                goldenWindowText.innerText = `Partial Overlap: ${awakeAndWorkingCount} of ${totalMonitored} zones currently active inside business hours.`;
+                goldenWindowAlert.className = "mt-4 p-3 rounded-xl border border-amber-100 dark:border-amber-900 bg-amber-50/50 dark:bg-amber-950/20 text-xs text-amber-700 dark:text-amber-300 flex items-center justify-between";
+            } else {
+                goldenWindowText.innerText = "Non-standard timings: Most target coordinates are currently asleep or outside core overlap window.";
+                goldenWindowAlert.className = "mt-4 p-3 rounded-xl border border-rose-100 dark:border-rose-900 bg-rose-50/50 dark:bg-rose-950/20 text-xs text-rose-700 dark:text-rose-300 flex items-center justify-between";
+            }
+        }
+
+        // Update Slider indicator label
+        function updateSliderDisplay(minutes) {
+            const hour = Math.floor(minutes / 60);
+            const minute = minutes % 60;
+            const period = hour >= 12 ? "PM" : "AM";
+            const normalizedHour = hour % 12 === 0 ? 12 : hour % 12;
+            const paddedMinute = String(minute).padStart(2, '0');
+            sliderValDisplay.innerText = `${normalizedHour}:${paddedMinute} ${period}`;
+        }
+
+        // Real-Time Timezone calculations across regions with built-in International API
+        function renderAllTimezones(dateTarget) {
+            // Populate Local Clock Header Card
+            const localFormat = new Intl.DateTimeFormat('en-US', {
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+            }).format(dateTarget);
+            localTimeDisplayEl.innerText = localFormat;
+
+            // Display detected local timezone details
+            const localZoneString = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            localZoneNameEl.innerText = localZoneString;
+            localDateStrEl.innerText = dateTarget.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            // Clear current grid and rebuild
+            timezoneCardContainer.innerHTML = "";
+
+            if (state.timezones.length === 0) {
+                timezoneCardContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-12 text-center text-slate-400 dark:text-slate-500">
+                        <svg class="w-10 h-10 mb-2 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <p class="text-sm font-bold">No Monitored Timezones Active</p>
+                        <p class="text-xs">Add a timezone or link client records to start tracking.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            state.timezones.forEach(zone => {
+                try {
+                    // Check if time-difference offset represents target zones
+                    const formatter = new Intl.DateTimeFormat('en-US', {
+                        timeZone: zone,
+                        year: 'numeric', month: 'numeric', day: 'numeric',
+                        hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false
+                    });
+
+                    // Calculated target timezone date
+                    const formatterParts = formatter.formatToParts(dateTarget);
+                    const partsMap = {};
+                    formatterParts.forEach(p => partsMap[p.type] = p.value);
+
+                    const targetDateStr = `${partsMap.year}-${partsMap.month.padStart(2,'0')}-${partsMap.day.padStart(2,'0')}T${partsMap.hour.padStart(2,'0')}:${partsMap.minute.padStart(2,'0')}`;
+                    const customDateObject = new Date(targetDateStr);
+
+                    // Offset indicator logic (compare current timezone to UTC or target local)
+                    const format12Hour = new Intl.DateTimeFormat('en-US', {
+                        timeZone: zone, hour: '2-digit', minute: '2-digit', hour12: true
+                    }).format(dateTarget);
+
+                    // Work hours safety rating score (highlight green if typical working hours 9 AM to 5 PM)
+                    const hourInt = parseInt(partsMap.hour);
+                    let workStatusBadge = "";
+                    if (hourInt >= 9 && hourInt < 17) {
+                        workStatusBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/45 text-emerald-600 dark:text-emerald-400">Overlap Workhours</span>';
+                    } else if (hourInt >= 17 && hourInt < 22) {
+                        workStatusBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-100 dark:bg-amber-950/45 text-amber-600 dark:text-amber-400">After Hours</span>';
+                    } else {
+                        workStatusBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-rose-100 dark:bg-rose-950/45 text-rose-600 dark:text-rose-400">Sleep/Night</span>';
+                    }
+
+                    // Card block template creation
+                    const card = document.createElement("div");
+                    card.className = "flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-brand-500/50 transition duration-150 shadow-sm";
+                    card.innerHTML = `
+                        <div class="flex-grow space-y-1">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-extrabold text-sm tracking-tight">${zone.split('/').pop().replace('_', ' ')}</span>
+                                ${workStatusBadge}
+                            </div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">${zone}</p>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-right">
+                                <p class="text-lg font-black tracking-tight tabular-nums text-indigo-600 dark:text-indigo-400">${format12Hour}</p>
+                                <p class="text-[10px] text-slate-400 font-semibold">${customDateObject.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
+                            </div>
+                            <button onclick="removeTimezone('${zone}')" class="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 text-slate-400 hover:text-red-500 transition" title="Delete timezone">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </button>
+                        </div>
+                    `;
+                    timezoneCardContainer.appendChild(card);
+                } catch (e) {
+                    console.error("Format timezone failed for", zone);
+                }
+            });
+        }
+
+        // Direct functions to delete active timezone rows
+        window.removeTimezone = function (zoneToDelete) {
+            state.timezones = state.timezones.filter(z => z !== zoneToDelete);
+            saveDatabase();
+            const currentSelected = mode === "LIVE" ? new Date() : getComputedDateFromSlider(parseInt(timeSlider.value));
+            renderAllTimezones(currentSelected);
+            updateClientTimezoneSelectors();
+        };
+
+        // Autocomplete logic for Add Timezone Search Box
+        timezoneSearchInput.addEventListener("input", (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            if (!query) {
+                timezoneSuggestions.classList.add("hidden");
+                return;
+            }
+
+            const matches = PopularTimezones.filter(item => 
+                item.label.toLowerCase().includes(query) || 
+                item.zone.toLowerCase().includes(query)
+            );
+
+            if (matches.length === 0) {
+                timezoneSuggestions.innerHTML = `<div class="p-2.5 text-xs text-slate-400 text-center">No matching timezones found. Add raw zone key name manually below.</div>`;
+            } else {
+                timezoneSuggestions.innerHTML = matches.map(item => `
+                    <button type="button" onclick="selectTimezoneSuggestion('${item.zone}')" class="w-full text-left px-3 py-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center justify-between border-b border-slate-100 dark:border-slate-800 last:border-0">
+                        <span class="font-bold text-slate-700 dark:text-slate-300 text-ellipsis overflow-hidden">${item.label}</span>
+                        <span class="text-[10px] bg-slate-100 dark:bg-slate-900 px-1.5 py-0.5 rounded text-slate-400 font-mono flex-shrink-0 ml-2">${item.zone}</span>
+                    </button>
+                `).join("");
+            }
+            timezoneSuggestions.classList.remove("hidden");
+        });
+
+        window.selectTimezoneSuggestion = function (zoneName) {
+            if (!state.timezones.includes(zoneName)) {
+                state.timezones.push(zoneName);
+                saveDatabase();
+                const currentSelected = mode === "LIVE" ? new Date() : getComputedDateFromSlider(parseInt(timeSlider.value));
+                renderAllTimezones(currentSelected);
+                updateClientTimezoneSelectors();
+            }
+            timezoneSearchInput.value = "";
+            timezoneSuggestions.classList.add("hidden");
+            addZoneFormBlock.classList.add("hidden");
+        };
+
+        // Render Client Directory List
+        function renderClientDirectory() {
+            clientsContainer.innerHTML = "";
+            if (state.clients.length === 0) {
+                clientsContainer.innerHTML = `
+                    <div class="p-4 text-center text-xs text-slate-400">No registered clients. Create one to auto-sync meeting times!</div>
+                `;
+                return;
+            }
+
+            state.clients.forEach(client => {
+                const clientCard = document.createElement("div");
+                clientCard.className = "p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-brand-500/30 transition flex items-center justify-between shadow-sm";
+                clientCard.innerHTML = `
+                    <div class="space-y-0.5">
+                        <div class="flex items-center space-x-1.5">
+                            <span class="font-extrabold text-xs">${client.name}</span>
+                            ${client.company ? `<span class="text-[9px] px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded text-slate-500 font-bold">${client.company}</span>` : ''}
+                        </div>
+                        <div class="flex items-center space-x-2 text-[10px] text-slate-400">
+                            <span>${client.timezone}</span>
+                            ${client.email ? `<span>&bull;</span> <span>${client.email}</span>` : ''}
+                        </div>
+                    </div>
+                    <button onclick="removeClient('${client.id}')" class="p-1 text-slate-400 hover:text-red-500 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+                `;
+                clientsContainer.appendChild(clientCard);
+            });
+        }
+
+        window.removeClient = function (clientId) {
+            state.clients = state.clients.filter(c => c.id !== clientId);
+            saveDatabase();
+            renderClientDirectory();
+            updateMeetingClientSelect();
+        };
+
+        // Populate and dynamic update client timezone options dropdown
+        function updateClientTimezoneSelectors() {
+            clientTimezoneSelect.innerHTML = "";
+            const currentZones = state.timezones.length > 0 ? state.timezones : ["UTC"];
+            currentZones.forEach(z => {
+                const opt = document.createElement("option");
+                opt.value = z;
+                opt.innerText = z;
+                clientTimezoneSelect.appendChild(opt);
+            });
+        }
+
+        // Populate meeting schedule target clients dropdown
+        function updateMeetingClientSelect() {
+            meetingClientSelect.innerHTML = "";
+            if (state.clients.length === 0) {
+                const opt = document.createElement("option");
+                opt.innerText = "No registered clients";
+                opt.value = "";
+                meetingClientSelect.appendChild(opt);
+                return;
+            }
+
+            state.clients.forEach(c => {
+                const opt = document.createElement("option");
+                opt.value = c.id;
+                opt.innerText = `${c.name} (${c.company || 'Private'})`;
+                meetingClientSelect.appendChild(opt);
+            });
+        }
+
+        // Create New Client handler
+        newClientForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const clientName = clientNameInput.value.trim();
+            const clientCompany = clientCompanyInput.value.trim();
+            const clientEmail = clientEmailInput.value.trim();
+            const clientZone = clientTimezoneSelect.value;
+
+            if (!clientName) return;
+
+            const newClient = {
+                id: `cl-${Date.now()}`,
+                name: clientName,
+                company: clientCompany,
+                email: clientEmail,
+                timezone: clientZone
+            };
+
+            state.clients.push(newClient);
+            saveDatabase();
+            renderClientDirectory();
+            updateMeetingClientSelect();
+
+            // Clear Form
+            newClientForm.reset();
+            addClientFormBlock.classList.add("hidden");
+        });
+
+        // Copy proposed meeting details to clipboard
+        window.copyMeetingSummary = function (meetingId) {
+            const meeting = state.meetings.find(m => m.id === meetingId);
+            if (!meeting) return;
+
+            const client = state.clients.find(c => c.id === meeting.clientId);
+            const localScheduleDate = new Date(`${meeting.date}T${meeting.time}`);
+            let clientPerspectiveTime = "UTC";
+
+            if (client) {
+                try {
+                    clientPerspectiveTime = new Intl.DateTimeFormat('en-US', {
+                        timeZone: client.timezone,
+                        weekday: 'short', month: 'short', day: 'numeric',
+                        hour: 'numeric', minute: 'numeric', hour12: true
+                    }).format(localScheduleDate);
+                } catch (e){}
+            }
+
+            const formattedLocal = localScheduleDate.toLocaleString('en-US', { 
+                weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true 
+            });
+
+            const tasksText = meeting.checklist && meeting.checklist.length > 0 
+                ? "\n📋 Tasks Checklist:\n" + meeting.checklist.map(t => `${t.completed ? '[x]' : '[ ]'} ${t.text}`).join("\n")
+                : "";
+
+            const summaryText = `📅 Proposed Meeting: ${meeting.title}
+---------------------------------------------
+👤 Client: ${client ? client.name : 'Unknown'} (${client && client.company ? client.company : 'Private'})
+🌎 Your Time: ${formattedLocal} (Local Time)
+🌎 Client Time: ${clientPerspectiveTime} (${client ? client.timezone.split('/').pop() : 'UTC'})
+---------------------------------------------
+📝 Agenda/Notes: ${meeting.description || 'No agenda provided.'}${tasksText}
+
+Sent via SyncZone.`;
+
+            // Fallback for document framework iframe safety copying
+            const dummyArea = document.createElement("textarea");
+            document.body.appendChild(dummyArea);
+            dummyArea.value = summaryText;
+            dummyArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummyArea);
+
+            openModal({ title: "Summary Copied!", body: "Beautiful meeting summary copied to clipboard. Ready to paste into Slack or Email!" });
+        };
+
+        // Export unique proposal hash link
+        window.shareMeetingProposalLink = function (meetingId) {
+            const meeting = state.meetings.find(m => m.id === meetingId);
+            if (!meeting) return;
+
+            const client = state.clients.find(c => c.id === meeting.clientId);
+            
+            const stateToShare = {
+                timezones: [client ? client.timezone : "UTC", Intl.DateTimeFormat().resolvedOptions().timeZone],
+                clients: client ? [client] : [],
+                meetings: [meeting]
+            };
+
+            const encodedState = btoa(unescape(encodeURIComponent(JSON.stringify(stateToShare))));
+            const proposalUrl = `${window.location.origin}${window.location.pathname}#proposal=${encodedState}`;
+
+            const dummyArea = document.createElement("textarea");
+            document.body.appendChild(dummyArea);
+            dummyArea.value = proposalUrl;
+            dummyArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummyArea);
+
+            openModal({ title: "Share Link Generated!", body: "A unique view proposal link was copied to your clipboard. Share it with your client so they can view these exact schedules on SyncZone." });
+        };
+
+        // Check if there is a proposal in hash on startup
+        function handleUrlHashImport() {
+            try {
+                const hash = window.location.hash;
+                if (hash && hash.startsWith("#proposal=")) {
+                    const base64Data = hash.split("=")[1];
+                    const decodedData = decodeURIComponent(escape(atob(base64Data)));
+                    return JSON.parse(decodedData);
+                }
+            } catch (err) {
+                console.error("Hash state translation failed", err);
+            }
+            return null;
+        }
+
+        // Export Event logs to .ICS standard calendar layout files
+        window.exportMeetingIcs = function (meetingId) {
+            const meeting = state.meetings.find(m => m.id === meetingId);
+            if (!meeting) return;
+
+            const localDate = new Date(`${meeting.date}T${meeting.time}`);
+            
+            // Format to UTC ISO timestamp for calendar standard
+            const formatIcsDate = (date) => {
+                return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            };
+
+            const dateStart = formatIcsDate(localDate);
+            const dateEnd = formatIcsDate(new Date(localDate.getTime() + 30 * 60000)); // Default 30 min duration
+
+            const icsData = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//SyncZone//NONSGML Calendar Event v1.0//EN
+BEGIN:VEVENT
+UID:uid-${meeting.id}@synczone.com
+DTSTAMP:${formatIcsDate(new Date())}
+DTSTART:${dateStart}
+DTEND:${dateEnd}
+SUMMARY:${meeting.title}
+DESCRIPTION:${meeting.description ? meeting.description.replace(/\n/g, '\\n') : ''}
+END:VEVENT
+END:VCALENDAR`;
+
+            const dataUri = "data:text/calendar;charset=utf-8," + encodeURIComponent(icsData);
+            const dlAnchor = document.createElement("a");
+            dlAnchor.setAttribute("href", dataUri);
+            dlAnchor.setAttribute("download", `${meeting.title.toLowerCase().replace(/[^a-z0-9]/g, '_')}.ics`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+        };
+
+        // Render scheduled meetings and dynamically convert local scheduling to client's perspective
+        function renderMeetings() {
+            meetingsContainer.innerHTML = "";
+            if (state.meetings.length === 0) {
+                meetingsContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-12 text-center text-slate-400 dark:text-slate-500">
+                        <svg class="w-10 h-10 mb-2 opacity-55" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        <p class="text-xs font-bold">No Scheduled Meetings Found</p>
+                        <p class="text-[10px]">Create a client profile and plan a global event card instantly.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            state.meetings.forEach((meeting) => {
+                // Find bound Client
+                const client = state.clients.find(c => c.id === meeting.clientId);
+                const clientNameStr = client ? client.name : "Unregistered Client";
+                const clientCompanyStr = client && client.company ? `@ ${client.company}` : "";
+
+                // Calculated client time from meeting's input date & time (Local format)
+                const localScheduleDateStr = `${meeting.date}T${meeting.time}`;
+                const localScheduleDate = new Date(localScheduleDateStr);
+
+                let clientPerspectiveTime = "Unknown";
+                if (client) {
+                    try {
+                        clientPerspectiveTime = new Intl.DateTimeFormat('en-US', {
+                            timeZone: client.timezone,
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            hour12: true
+                        }).format(localScheduleDate);
+                    } catch (e) {
+                        clientPerspectiveTime = "Invalid timezone configuration";
+                    }
+                }
+
+                // Compile items in the checklist
+                let checklistHtml = "";
+                if (meeting.checklist && meeting.checklist.length > 0) {
+                    checklistHtml = `
+                        <div class="mt-3.5 space-y-1.5 border-t border-slate-200 dark:border-slate-800/80 pt-3">
+                            <span class="text-[9px] font-black tracking-wider text-slate-400 uppercase">Preparation Checklist:</span>
+                            <div class="space-y-1.5">
+                                ${meeting.checklist.map((item, idx) => `
+                                    <label class="flex items-center space-x-2 text-[11px] cursor-pointer hover:text-slate-700 dark:hover:text-slate-200">
+                                        <input type="checkbox" onchange="toggleTask('${meeting.id}', ${idx})" ${item.completed ? 'checked' : ''} class="rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5 border-slate-300 dark:border-slate-700">
+                                        <span class="${item.completed ? 'line-through text-slate-400' : 'text-slate-600 dark:text-slate-400'}">${item.text}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const card = document.createElement("div");
+                card.className = "p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/70 space-y-2 relative group hover:border-indigo-500/50 transition duration-150 shadow-sm";
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-[9px] uppercase font-black text-indigo-500 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/30 px-2 py-0.5 rounded-full">${clientNameStr} ${clientCompanyStr}</span>
+                            <h3 class="font-extrabold text-sm text-slate-800 dark:text-slate-100 mt-1">${meeting.title}</h3>
+                        </div>
+                        <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 absolute top-4 right-4 transition-opacity duration-150 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-1 rounded-lg">
+                            <!-- Edit Meeting Trigger -->
+                            <button onclick="editMeeting('${meeting.id}')" class="p-1 text-slate-400 hover:text-indigo-500 transition" title="Edit meeting/notes">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                            </button>
+                            <!-- Delete Meeting Trigger -->
+                            <button onclick="removeMeeting('${meeting.id}')" class="p-1 text-slate-400 hover:text-red-500 transition" title="Delete meeting">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    ${meeting.description ? `<p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">${meeting.description}</p>` : ''}
+
+                    <div class="grid grid-cols-2 gap-3.5 mt-3 pt-3 border-t border-slate-200 dark:border-slate-800 text-[11px]">
+                        <div>
+                            <span class="block text-[8px] font-bold text-slate-400 uppercase tracking-wider">Your Local Time</span>
+                            <span class="font-extrabold text-slate-700 dark:text-slate-300">
+                                ${localScheduleDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} at ${localScheduleDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                            </span>
+                        </div>
+                        <div class="border-l border-slate-200 dark:border-slate-800 pl-3">
+                            <span class="block text-[8px] font-bold text-slate-400 uppercase tracking-wider">Client Time (${client ? client.timezone.split('/').pop() : 'UTC'})</span>
+                            <span class="font-black text-brand-600 dark:text-brand-400">${clientPerspectiveTime}</span>
+                        </div>
+                    </div>
+
+                    <!-- Premium Workflow Quick actions tray -->
+                    <div class="flex items-center space-x-2 pt-3 mt-1 border-t border-slate-100 dark:border-slate-800/60">
+                        <button onclick="copyMeetingSummary('${meeting.id}')" class="flex items-center space-x-1 px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-[10px] font-bold transition">
+                            <svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-5 10h6m-7-5h7" /></svg>
+                            <span>Copy Summary</span>
+                        </button>
+                        <button onclick="exportMeetingIcs('${meeting.id}')" class="flex items-center space-x-1 px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-[10px] font-bold transition">
+                            <svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            <span>Add to Calendar</span>
+                        </button>
+                        <button onclick="shareMeetingProposalLink('${meeting.id}')" class="flex items-center space-x-1 px-2.5 py-1 rounded bg-brand-50 hover:bg-brand-100 dark:bg-brand-950/40 dark:hover:bg-brand-900/40 text-[10px] font-black text-brand-600 dark:text-brand-400 transition">
+                            <svg class="w-3 h-3 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 10.742l4.303-2.152M8.684 13.258l4.303 2.152M19 12a3 3 0 11-6 0 3 3 0 016 0zm-11 5a3 3 0 11-6 0 3 3 0 016 0zm0-10a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                            <span>Share Link</span>
+                        </button>
+                    </div>
+
+                    ${checklistHtml}
+                `;
+                meetingsContainer.appendChild(card);
+            });
+        }
+
+        // Populate edit meeting attributes in form
+        window.editMeeting = function(meetingId) {
+            const meeting = state.meetings.find(m => m.id === meetingId);
+            if (!meeting) return;
+
+            editingMeetingId = meetingId;
+            addMeetingFormBlock.classList.remove("hidden");
+            
+            // Focus on the scheduling form container
+            addMeetingFormBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            // Set inputs
+            meetingClientSelect.value = meeting.clientId;
+            meetingDateInput.value = meeting.date;
+            meetingTimeInput.value = meeting.time;
+            meetingTitleInput.value = meeting.title;
+            meetingDescInput.value = meeting.description || "";
+            meetingChecklistInput.value = meeting.checklist ? meeting.checklist.map(t => t.text).join(", ") : "";
+
+            // Adjust titles and button labels
+            meetingFormTitle.innerText = "Edit Scheduled Meeting / Notes";
+            submitMeetingBtn.innerText = "Update Schedule Event";
+            submitMeetingBtn.className = "w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition shadow-md";
+        };
+
+        // Reset meeting state structure
+        function clearMeetingFormState() {
+            editingMeetingId = null;
+            newMeetingForm.reset();
+            meetingFormTitle.innerText = "Create Meeting / Event Card";
+            submitMeetingBtn.innerText = "Save Schedule Event";
+            submitMeetingBtn.className = "w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition";
+        }
+
+        // Toggle task checklist completions
+        window.toggleTask = function (meetingId, idx) {
+            const meeting = state.meetings.find(m => m.id === meetingId);
+            if (meeting && meeting.checklist[idx]) {
+                meeting.checklist[idx].completed = !meeting.checklist[idx].completed;
+                saveDatabase();
+                renderMeetings();
+            }
+        };
+
+        window.removeMeeting = function (meetingId) {
+            state.meetings = state.meetings.filter(m => m.id !== meetingId);
+            saveDatabase();
+            renderMeetings();
+            if (editingMeetingId === meetingId) {
+                clearMeetingFormState();
+                addMeetingFormBlock.classList.add("hidden");
+            }
+        };
+
+        // Create New Meeting / Update existing handler
+        newMeetingForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const clientId = meetingClientSelect.value;
+            const dateVal = meetingDateInput.value;
+            const timeVal = meetingTimeInput.value;
+            const titleVal = meetingTitleInput.value.trim();
+            const descVal = meetingDescInput.value.trim();
+            const checklistVal = meetingChecklistInput.value.trim();
+
+            if (!clientId || !dateVal || !timeVal || !titleVal) {
+                openModal({ title: "Form Incomplete", body: "Please fill in all the required scheduler fields." });
+                return;
+            }
+
+            const targetClient = state.clients.find(c => c.id === clientId);
+
+            // Parse checklist entries
+            const parsedChecklist = checklistVal
+                ? checklistVal.split(",").map(t => ({ text: t.trim(), completed: false })).filter(t => t.text.length > 0)
+                : [];
+
+            if (editingMeetingId) {
+                // UPDATE EXISTING
+                const meetingIndex = state.meetings.findIndex(m => m.id === editingMeetingId);
+                if (meetingIndex !== -1) {
+                    // Retain completed states if task text matches
+                    const originalChecklist = state.meetings[meetingIndex].checklist || [];
+                    const finalChecklist = parsedChecklist.map(newItem => {
+                        const matchedOriginal = originalChecklist.find(oldItem => oldItem.text.toLowerCase() === newItem.text.toLowerCase());
+                        if (matchedOriginal) newItem.completed = matchedOriginal.completed;
+                        return newItem;
+                    });
+
+                    state.meetings[meetingIndex] = {
+                        id: editingMeetingId,
+                        title: titleVal,
+                        clientId: clientId,
+                        clientTimezone: targetClient ? targetClient.timezone : "UTC",
+                        date: dateVal,
+                        time: timeVal,
+                        description: descVal,
+                        checklist: finalChecklist
+                    };
+                }
+            } else {
+                // CREATE NEW
+                const newMeeting = {
+                    id: `mt-${Date.now()}`,
+                    title: titleVal,
+                    clientId: clientId,
+                    clientTimezone: targetClient ? targetClient.timezone : "UTC",
+                    date: dateVal,
+                    time: timeVal,
+                    description: descVal,
+                    checklist: parsedChecklist
+                };
+                state.meetings.push(newMeeting);
+            }
+
+            saveDatabase();
+            renderMeetings();
+            clearMeetingFormState();
+            addMeetingFormBlock.classList.add("hidden");
+        });
+
+        // Setup Event Listeners for Collapsible Section Blocks
+        addZoneTriggerBtn.addEventListener("click", () => addZoneFormBlock.classList.toggle("hidden"));
+        closeZoneFormBtn.addEventListener("click", () => addZoneFormBlock.classList.add("hidden"));
+
+        addClientTriggerBtn.addEventListener("click", () => addClientFormBlock.classList.toggle("hidden"));
+        closeClientFormBtn.addEventListener("click", () => addClientFormBlock.classList.add("hidden"));
+
+        addMeetingTriggerBtn.addEventListener("click", () => {
+            if (state.clients.length === 0) {
+                openModal({ title: "No Clients", body: "Create a client profile first before scheduling global meetings." });
+                return;
+            }
+            clearMeetingFormState();
+            addMeetingFormBlock.classList.toggle("hidden");
+        });
+        closeMeetingFormBtn.addEventListener("click", () => {
+            clearMeetingFormState();
+            addMeetingFormBlock.classList.add("hidden");
+        });
+
+        // Mode Toggler Clicks
+        liveModeBtn.addEventListener("click", runLiveSync);
+        planModeBtn.addEventListener("click", runPlanningMode);
+        
+        // Slider Input Trigger
+        timeSlider.addEventListener("input", () => {
+            if (mode === "LIVE") {
+                runPlanningMode();
+            } else {
+                const selectedMinutes = parseInt(timeSlider.value);
+                const customDate = getComputedDateFromSlider(selectedMinutes);
+                updateSliderDisplay(selectedMinutes);
+                renderAllTimezones(customDate);
+                checkGoldenWindowOverlap(selectedMinutes);
+            }
+        });
+
+        // DB Drawer Collapsible Logic
+        dbManageBtn.addEventListener("click", () => {
+            dbManageDrawer.classList.toggle("hidden");
+            updateMetrics();
+        });
+        closeDbDrawerBtn.addEventListener("click", () => dbManageDrawer.classList.add("hidden"));
+
+        // Dark/Light Theme Switcher Logic
+        function setTheme(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add("dark");
+                sunIcon.classList.remove("hidden");
+                moonIcon.classList.add("hidden");
+                localStorage.setItem("synczone_theme", "dark");
+            } else {
+                document.documentElement.classList.remove("dark");
+                sunIcon.classList.add("hidden");
+                moonIcon.classList.remove("hidden");
+                localStorage.setItem("synczone_theme", "light");
+            }
+        }
+
+        // Detect saved or system theme preference
+        const savedTheme = localStorage.getItem("synczone_theme");
+        if (savedTheme) {
+            setTheme(savedTheme === "dark");
+        } else {
+            const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            setTheme(systemPrefersDark);
+        }
+
+        themeToggleBtn.addEventListener("click", () => {
+            const isDarkActive = document.documentElement.classList.contains("dark");
+            setTheme(!isDarkActive);
+        });
+
+        // Sticky Ad close
+        closeStickyAdBtn.addEventListener("click", () => {
+            stickyAdAnchor.classList.add("hidden");
+        });
+
+        // DB ACTIONS: Export state database as clean JSON format file
+        exportDbBtn.addEventListener("click", () => {
+            try {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+                const downloadAnchor = document.createElement("a");
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", `synczone_backup_${new Date().toISOString().slice(0,10)}.json`);
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                downloadAnchor.remove();
+            } catch (err) {
+                openModal({ title: "Export Failed", body: "Could not stringify local database state." });
+            }
+        });
+
+        // DB ACTIONS: Restore database from selected JSON schema bundle
+        importFileInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const parsed = JSON.parse(evt.target.result);
+                    if (parsed.timezones && parsed.clients && parsed.meetings) {
+                        state = parsed;
+                        saveDatabase();
+                        
+                        // Full app rerender
+                        const currentSelected = mode === "LIVE" ? new Date() : getComputedDateFromSlider(parseInt(timeSlider.value));
+                        renderAllTimezones(currentSelected);
+                        renderClientDirectory();
+                        renderMeetings();
+                        updateClientTimezoneSelectors();
+                        updateMeetingClientSelect();
+                        updateMetrics();
+
+                        openModal({ title: "Import Successful", body: "Database restored correctly." });
+                        dbManageDrawer.classList.add("hidden");
+                    } else {
+                        openModal({ title: "Invalid Schema", body: "JSON file does not match SyncZone state parameters." });
+                    }
+                } catch (err) {
+                    openModal({ title: "Parse Error", body: "The file upload failed. Ensure it is correct JSON format." });
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // DB ACTIONS: Wipe current data and load clean slate template
+        resetDbBtn.addEventListener("click", () => {
+            openModal({
+                title: "Confirm Database Wipe",
+                body: "Are you sure you want to delete all custom clients, meetings, and saved timezone items? This action cannot be undone.",
+                confirmText: "Wipe Data",
+                showCancel: true,
+                onConfirm: () => {
+                    localStorage.removeItem("synczone_database");
+                    loadDatabase();
+                    
+                    const currentSelected = mode === "LIVE" ? new Date() : getComputedDateFromSlider(parseInt(timeSlider.value));
+                    renderAllTimezones(currentSelected);
+                    renderClientDirectory();
+                    renderMeetings();
+                    updateClientTimezoneSelectors();
+                    updateMeetingClientSelect();
+                    updateMetrics();
+
+                    dbManageDrawer.classList.add("hidden");
+                }
+            });
+        });
+
+        // App Boot Loader
+        window.onload = async function () {
+            await fetchTimezoneDefinitions();
+            loadDatabase();
+            updateClientTimezoneSelectors();
+            updateMeetingClientSelect();
+            renderClientDirectory();
+            renderMeetings();
+            runLiveSync(); // Default app clock loop to live mode
+        };
+    </script>
+</body>
+</html>
